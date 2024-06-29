@@ -28,8 +28,8 @@ def connect_with_middleware(contract_json):
 	# The first section will be the same as "connect_to_eth()" but with a BNB url
 	#w3 = 0
 	bnb_url = "https://bsc-dataseed.binance.org/"  # Public BNB provider URL
-  w3 = Web3(Web3.HTTPProvider(bnb_url))
-
+	w3 = Web3(Web3.HTTPProvider(bnb_url))
+	
 	# The second section requires you to inject middleware into your w3 object and
 	# create a contract object. Read more on the docs pages at https://web3py.readthedocs.io/en/stable/middleware.html
 	# and https://web3py.readthedocs.io/en/stable/web3.contract.html
