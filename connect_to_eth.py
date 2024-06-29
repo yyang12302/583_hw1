@@ -12,7 +12,7 @@ infura_url = f"https://mainnet.infura.io/v3/{infura_token}"
 
 def connect_to_eth():
 	url = "https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"  # FILL THIS IN
-	w3 = Web3(HTTPProvider(https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT))
+	w3 = Web3(HTTPProvider("https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"))
 	assert w3.is_connected(), f"Failed to connect to provider at {"https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"}"
 	return w3
 
