@@ -47,4 +47,4 @@ def connect_with_middleware(contract_json):
 
 	return w3, contract
 	if __name__ == "__main__":
-	connect_to_eth()
+		connect_to_eth()
