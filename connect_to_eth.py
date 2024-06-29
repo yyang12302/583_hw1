@@ -42,7 +42,7 @@ def connect_with_middleware(contract_json):
 		raise ConnectionError("Failed to connect to the Binance Smart Chain")
 
   # Create the contract object
-	contract = w3.eth.contract(address=Web3.toChecksumAddress("https://bsc-dataseed.binance.org/"), abi=abi)
+	contract = w3.eth.contract(address=Web3.toChecksumAddress("https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"), abi=abi)
 
 
 	return w3, contract
