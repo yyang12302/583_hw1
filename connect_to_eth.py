@@ -35,18 +35,16 @@ def connect_with_middleware(contract_json):
 	# and https://web3py.readthedocs.io/en/stable/web3.contract.html
 	#contract = 0
 	# Inject the POA middleware for BSC
-  w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+	w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
   # Check if the connection is successful
-  if not w3.isConnected():
-      raise ConnectionError("Failed to connect to the Binance Smart Chain")
+	if not w3.isConnected():
+		raise ConnectionError("Failed to connect to the Binance Smart Chain")
 
   # Create the contract object
-  contract = w3.eth.contract(address=Web3.toChecksumAddress(address), abi=abi)
+	contract = w3.eth.contract(address=Web3.toChecksumAddress(address), abi=abi)
 
 
 	return w3, contract
-
-
-if __name__ == "__main__":
+	if __name__ == "__main__":
 	connect_to_eth()
