@@ -3,59 +3,52 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from web3.providers.rpc import HTTPProvider
 
+'''If you use one of the suggested infrastructure providers, the url will be of the form
+now_url  = f"https://eth.nownodes.io/{now_token}"
+alchemy_url = f"https://eth-mainnet.alchemyapi.io/v2/{alchemy_token}"
+infura_url = f"https://mainnet.infura.io/v3/{infura_token}"  
+'''
+
+
 def connect_to_eth():
     url = "https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"  # FILL THIS IN
     w3 = Web3(HTTPProvider(url))
     assert w3.is_connected(), f"Failed to connect to provider at {url}"
     return w3
 
+
 def connect_with_middleware(contract_json):
     with open(contract_json, "r") as f:
-        d = json.load(f)
-        d = d['bsc']
-        address = d['address']
-        abi = d['abi']
+    d = json.load(f)
+    d = d['bsc']
+    address = d['address']
+    abi = d['abi']
 
-    # Connect to BSC
+ # TODO complete this method
+ # The first section will be the same as "connect_to_eth()" but with a BNB url
+ #w3 = 0
     bnb_url = "https://bsc-dataseed.binance.org/"  # Public BNB provider URL
     w3 = Web3(Web3.HTTPProvider(bnb_url))
     assert w3.is_connected(), f"Failed to connect to provider at {bnb_url}"
-    print("Successfully connected to BSC")
-
-    # Inject the POA middleware for BSC
+ 
+ # The second section requires you to inject middleware into your w3 object and
+ # create a contract object. Read more on the docs pages at https://web3py.readthedocs.io/en/stable/middleware.html
+ # and https://web3py.readthedocs.io/en/stable/web3.contract.html
+ #contract = 0
+ # Inject the POA middleware for BSC
+ 
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-    print("Successfully injected middleware into the web3 object")
+    contract = w3.eth.contract(address=address, abi=abi)
 
-    # Create the contract object
-    contract = w3.eth.contract(address=Web3.to_checksum_address(address), abi=abi)
-    print("Contract object created successfully")
+  # Check if the connection is successful
+    if not w3.is_connected():
+        raise ConnectionError("Failed to connect to the Binance Smart Chain")
 
-    # Check if we can interact with the contract
-    try:
-        # Example: Check the contract's total supply (assuming it's an ERC20 token)
-        total_supply = contract.functions.totalSupply().call()
-        print(f"Total Supply: {total_supply}")
-    except Exception as e:
-        print(f"Could not transact with/call contract function, is contract deployed correctly and chain synced? Error: {e}")
+  # Create the contract object
+ #contract = w3.eth.contract(address=Web3.to_checksum_address(address), abi=abi)
+ 
+
 
     return w3, contract
-
-if __name__ == "__main__":
-    eth_w3 = connect_to_eth()
-    print("Connected to Ethereum Mainnet")
-    try:
-        eth_block = eth_w3.eth.get_block('latest')
-        print(f"Successfully retrieved block {eth_block['number']}")
-    except Exception as e:
-        print(f"Failed to retrieve Ethereum block: {e}")
-
-    bsc_w3, contract = connect_with_middleware("path_to_your_contract.json")  # Replace with the correct path to your JSON file
-    if bsc_w3.is_connected():
-        print("w3 instance is connected to BSC")
-        try:
-            bsc_block = bsc_w3.eth.get_block('latest')
-            print(f"Successfully retrieved block {bsc_block['number']}")
-        except Exception as e:
-            print(f"Failed to retrieve BSC block: {e}")
-    else:
-        print("w3 instance is not connected to BSC")
+    if __name__ == "__main__":
+        connect_to_eth()
