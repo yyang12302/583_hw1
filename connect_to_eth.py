@@ -21,7 +21,7 @@ def connect_with_middleware(contract_json):
         d = json.load(f)
         d = d['bsc']
         address = d['address']
-        abi = d['abi']
+        abi = d['abi'] 
 
     # Connect to BNB provider
     bnb_url = "https://bsc-dataseed.binance.org/"  # Public BNB provider URL
