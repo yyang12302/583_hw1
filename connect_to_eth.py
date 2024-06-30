@@ -24,7 +24,7 @@ def connect_with_middleware(contract_json):
         abi = d['abi'] 
 
     # Connect to BNB provider
-    bnb_url = "https://bsc-dataseed.binance.org/"  # Public BNB provider URL
+    bnb_url = "https://bsc-testnet-rpc.publicnode.com"  # Public BNB provider URL
     w3 = Web3(Web3.HTTPProvider(bnb_url))
     assert w3.is_connected(), f"Failed to connect to provider at {bnb_url}"
 
