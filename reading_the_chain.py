@@ -65,7 +65,7 @@ def is_ordered_block(w3, block_num):
     #YOUR CODE HERE
 	for transaction_hash in block['transactions']:
 		transaction = w3.eth.get_transaction(transaction_hash)
-        	gasPrice = transaction['gasPrice']
+		gasPrice = transaction['gasPrice']
         	if 'maxPriorityFeePerGas' in transaction:
             		gasPrice = transaction['maxPriorityFeePerGas']
         	if gasPrice > lastGP:
