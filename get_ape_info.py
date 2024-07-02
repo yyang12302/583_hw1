@@ -31,7 +31,7 @@ except Exception as e:
 api_url = "https://mainnet.infura.io/v3/aafeae9b6729474abd0aec8eaf878d77"  #YOU WILL NEED TO TO PROVIDE THE URL OF AN ETHEREUM NODE
 provider = HTTPProvider(api_url)
 web3 = Web3(provider)
-contract = web3.eth.contract(address=bayc_address, abi=abi)
+contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=abi)
 
 
 def get_from_ipfs(cid,content_type="json"):
