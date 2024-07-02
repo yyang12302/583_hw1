@@ -45,6 +45,8 @@ def get_from_ipfs(cid,content_type="json"):
 def get_ape_info(apeID):
 	assert isinstance(apeID,int), f"{apeID} is not an int"
 	assert 1 <= apeID, f"{apeID} must be at least 1"
+	assert apeID < 10000, f"{apeID} must be at most 9999"
+
 
 	data = {'owner': "", 'image': "", 'eyes': "" }
 	
