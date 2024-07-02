@@ -10,14 +10,12 @@ from web3.providers.rpc import HTTPProvider
 #alchemy_url = f"https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"
 # infura_url = f"https://mainnet.infura.io/v3/{infura_token}"
 
-def connect_to_eth():
-	# TODO insert your code for this method from last week's assignment
-	url = "https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"  # FILL THIS IN
-	w3 = Web3(HTTPProvider(url)
-	assert w3.is_connected(), f"Failed to connect to provider at {url}"
-	return w3
-	#return w3
 
+def connect_to_eth():
+    url = "https://eth-mainnet.g.alchemy.com/v2/nbSCxYOO8iccH60-uMmNp0gZDdhGSJKT"  # FILL THIS IN
+    w3 = Web3(HTTPProvider(url))
+    assert w3.is_connected(), f"Failed to connect to provider at {url}"
+    return w3
 
 
 
