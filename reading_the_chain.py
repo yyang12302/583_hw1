@@ -63,16 +63,16 @@ def is_ordered_block(w3, block_num):
 	lastGP = float('inf')
 
 	# TODO YOUR CODE HERE
-	for transaction_hash in block['transactions']:
-  		transaction = w3.eth.get_transaction(transaction_hash)
-  		gasPrice = transaction['gasPrice']
-    		if 'maxPriorityFeePerGas' in transaction:
-    			gasPrice = transaction['maxPriorityFeePerGas']
-    		if gasPrice > lastGP:
-      			ordered = False
-    			break
-    		lastGP = gasPrice
-  	return ordered
+    for transaction_hash in block['transactions']:
+        transaction = w3.eth.get_transaction(transaction_hash)
+        gasPrice = transaction['gasPrice']
+        if 'maxPriorityFeePerGas' in transaction:
+            gasPrice = transaction['maxPriorityFeePerGas']
+        if gasPrice > lastGP:
+            ordered = False
+            break
+        lastGP = gasPrice
+    return ordered
 
 
 
