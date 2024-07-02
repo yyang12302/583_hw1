@@ -4,20 +4,31 @@ from web3.providers.rpc import HTTPProvider
 import requests
 import json
 import time
+from pprint import pprint
 
-bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
-contract_address = Web3.to_checksum_address(bayc_address)
+#bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
+#contract_address = Web3.to_checksum_address(bayc_address)
 
 #You will need the ABI to connect to the contract
 #The file 'abi.json' has the ABI for the bored ape contract
 #In general, you can get contract ABIs from etherscan
 #https://api.etherscan.io/api?module=contract&action=getabi&address=0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D
+
+CONTRACT_ADDRESS = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'
+ABI_ENDPOINT = 'https://api.etherscan.io/api?module=contract&action=getabi&address='
+
 with open('/home/codio/workspace/abi.json', 'r') as f:
 	abi = json.load(f) 
+try:
+    response = requests.get( f"{ABI_ENDPOINT}{CONTRACT_ADDRESS}", timeout = 20 )	
+    abi = response.json()['result']
+except Exception as e:
+    print( f"Failed to get BAYC contract from {ABI_ENDPOINT}" )
+    print( e )
 
 ############################
 #Connect to an Ethereum node
-api_url = "https://mainnet.infura.io/v3/aafeae9b6729474abd0aec8eaf878d77=0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"  #YOU WILL NEED TO TO PROVIDE THE URL OF AN ETHEREUM NODE
+api_url = "https://mainnet.infura.io/v3/aafeae9b6729474abd0aec8eaf878d77"  #YOU WILL NEED TO TO PROVIDE THE URL OF AN ETHEREUM NODE
 provider = HTTPProvider(api_url)
 web3 = Web3(provider)
 contract = web3.eth.contract(address=bayc_address, abi=abi)
