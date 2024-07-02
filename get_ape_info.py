@@ -49,15 +49,15 @@ def get_ape_info(apeID):
 	
 	#YOUR CODE HERE
 	owner = contract.functions.ownerOf(apeID).call()
-  data['owner'] = owner
+	data['owner'] = owner
 
-  uri = contract.functions.tokenURI(apeID).call()
-  bayc_cid = uri.replace('ipfs://', '')
-  content_data = get_from_ipfs(bayc_cid)
+	uri = contract.functions.tokenURI(apeID).call()
+	bayc_cid = uri.replace('ipfs://', '')
+	content_data = get_from_ipfs(bayc_cid)
 
-  data['image'] = content_data['image']
+	data['image'] = content_data['image']
 
-  for attr in content_data['attributes']:
+	for attr in content_data['attributes']:
 		if attr['trait_type'] == 'Eyes':
 			data['eyes'] = attr['value']
 
