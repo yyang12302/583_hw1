@@ -13,7 +13,7 @@ def mine_block(k, prev_hash, rand_lines):
 	combined_data = prev_hash + byte_str
 	while True:
 		nonce = secrets.token_bytes(16)
-		hash_object = hashlib.sha256(combined _data + nonce)
+		hash_object = hashlib.sha256(combined_data + nonce)
 		hash_result = hash_object.digest()
 		binary_hash = bin(int.from_bytes(hash_result, byteorder='big'))
 		if binary_hash.endswith('0'* k):
