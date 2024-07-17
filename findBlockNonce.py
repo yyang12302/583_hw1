@@ -28,7 +28,7 @@ def get_random_lines(filename, quantity):
     as a list from the filename given. 
     Do not modify this function
     """
-	lines =[]
+	lines = []
     	with open(filename, 'r') as f:
         	for line in f:
 			lines.append(line.strip())
