@@ -28,14 +28,14 @@ def get_random_lines(filename, quantity):
     as a list from the filename given. 
     Do not modify this function
     """
-	lines = []
-	with open(filename, 'r') as f:
-		for line in f:
-			lines.append(line.strip())
-	random_lines = []
-	for x in range(quantity):
-		random_lines.append(lines[random.randint(0, quantity - 1)])
-	return random_lines
+lines = []
+with open(filename, 'r') as f:
+	for line in f:
+		lines.append(line.strip())
+random_lines = []
+for x in range(quantity):
+	random_lines.append(lines[random.randint(0, quantity - 1)])
+return random_lines
 
 
 if __name__ == '__main__':
