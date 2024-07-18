@@ -1,11 +1,14 @@
-import eth_account
+from eth_account.messages import encode_defunct
 import random
 import string
 import json
 from pathlib import Path
 from web3 import Web3
 from web3.middleware import geth_poa_middleware  # Necessary for POA chains
-
+from web3 import Web3
+from eth_account import Account
+import eth_account
+from web3 import contract
 
 def merkle_assignment():
     """
@@ -25,7 +28,7 @@ def merkle_assignment():
     tree = build_merkle(leaves)
 
     # Select a random leaf and create a proof for that leaf
-    random_leaf_index = 0 #TODO generate a random index from primes to claim (0 is already claimed)
+    random_leaf_index = 100 #TODO generate a random index from primes to claim (0 is already claimed)
     proof = prove_merkle(tree, random_leaf_index)
 
     # This is the same way the grader generates a challenge for sign_challenge()
@@ -37,7 +40,7 @@ def merkle_assignment():
         tx_hash = '0x'
         # TODO, when you are ready to attempt to claim a prime (and pay gas fees),
         #  complete this method and run your code with the following line un-commented
-        # tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
+        tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
 
 
 def generate_primes(num_primes):
@@ -48,6 +51,20 @@ def generate_primes(num_primes):
     primes_list = []
 
     #TODO YOUR CODE HERE
+    if num_primes < 1:
+        return primes_list
+
+    candidate = 2  # Starting with the first prime number
+
+    while len(primes_list) < num_primes:
+        is_prime = True
+        for prime in primes_list:
+            if candidate % prime == 0:
+                is_prime = False
+                break
+        if is_prime:
+            primes_list.append(candidate)
+        candidate += 1
 
     return primes_list
 
@@ -57,10 +74,12 @@ def convert_leaves(primes_list):
         Converts the leaves (primes_list) to bytes32 format
         returns list of primes where list entries are bytes32 encodings of primes_list entries
     """
-
     # TODO YOUR CODE HERE
-
-    return []
+    bytes32_list = []
+    for prime in primes_list:
+        prime_bytes = prime.to_bytes(32, byteorder='big')
+        bytes32_list.append(prime_bytes)
+    return bytes32_list
 
 
 def build_merkle(leaves):
@@ -72,12 +91,29 @@ def build_merkle(leaves):
     """
 
     #TODO YOUR CODE HERE
-    tree = []
+    if len(leaves) == 0:
+        return []
+
+    tree = [leaves]
+    current_level = leaves 
+
+    while len(current_level) > 1:
+        next_level = []
+        for i in range(0, len(current_level), 2):
+            left = current_level[i]
+            if i + 1 < len(current_level):
+                right = current_level[i + 1]
+            else:
+                right = left  # If there's an odd number of nodes, duplicate the last node
+            next_level.append(hash_pair(left, right))
+        tree.append(next_level)
+        current_level = next_level
 
     return tree
+  
 
 
-def prove_merkle(merkle_tree, random_indx):
+def prove_merkle(merkle_tree, random_index):
     """
         Takes a random_index to create a proof of inclusion for and a complete Merkle tree
         as a list of lists where index 0 is the list of leaves, index 1 is the list of
@@ -86,6 +122,22 @@ def prove_merkle(merkle_tree, random_indx):
     """
     merkle_proof = []
     # TODO YOUR CODE HERE
+    level_index = 0
+    while level_index < len(merkle_tree) - 1:
+        level = merkle_tree[level_index]
+        # Determine the index of the sibling
+        if random_index % 2 == 0:
+            sibling_index = random_index + 1 if random_index + 1 < len(level) else random_index - 1
+        else:
+            sibling_index = random_index - 1
+
+        # Add the sibling hash to the proof
+        sibling_hash = level[sibling_index]
+        merkle_proof.append(sibling_hash)
+
+        # Move to the next level
+        random_index //= 2
+        level_index += 1
 
     return merkle_proof
 
@@ -99,12 +151,14 @@ def sign_challenge(challenge):
         claimed a prime
     """
     acct = get_account()
-
     addr = acct.address
     eth_sk = acct.key
 
     # TODO YOUR CODE HERE
-    eth_sig_obj = 'placeholder'
+    #create message
+    eth_encoded_msg = encode_defunct(text=challenge)
+    #sign the message
+    eth_sig_obj = acct.sign_message(eth_encoded_msg)
 
     return addr, eth_sig_obj.signature.hex()
 
@@ -121,8 +175,26 @@ def send_signed_msg(proof, random_leaf):
     address, abi = get_contract_info(chain)
     w3 = connect_to(chain)
 
+    contract = w3.eth.contract(address=address, abi=abi)
+
     # TODO YOUR CODE HERE
-    tx_hash = 'placeholder'
+    # Build transaction
+    nonce = w3.eth.get_transaction_count(acct.address)
+    gas_price = w3.eth.gas_price
+
+    tx = contract.functions.submit(proof, random_leaf).build_transaction({
+        "chainId": 56,  # BSC Mainnet chain ID
+        "gas": 2000000,
+        "gasPrice": gas_price,
+        "nonce": nonce,
+        "from": acct.address,
+    })
+
+    # Sign the transaction
+    signed_tx = w3.eth.account.sign_transaction(tx,private_key=acct.key)
+
+    # Send the transaction
+    tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
     return tx_hash
 
@@ -157,7 +229,7 @@ def get_account():
         sk = f.readline().rstrip()
     if sk[0:2] == "0x":
         sk = sk[2:]
-    return eth_account.Account.from_key(sk)
+    return Account.from_key(sk)
 
 
 def get_contract_info(chain):
@@ -207,3 +279,4 @@ def hash_pair(a, b):
 
 if __name__ == "__main__":
     merkle_assignment()
+
