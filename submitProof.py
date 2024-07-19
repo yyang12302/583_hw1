@@ -183,7 +183,7 @@ def send_signed_msg(proof, random_leaf):
     gas_price = w3.eth.gas_price
 
     tx = contract.functions.submit(proof, random_leaf).build_transaction({
-        "chainId": 56,  # BSC Mainnet chain ID
+        "chainId": 97,  # BSC Mainnet chain ID
         "gas": 2000000,
         "gasPrice": gas_price,
         "nonce": nonce,
