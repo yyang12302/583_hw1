@@ -28,9 +28,11 @@ def getContractInfo(chain):
     This function is used by the autograder and will likely be useful to you
     """
     p = Path(__file__).with_name(contract_info)
+    print( "1" )
     try:
         with p.open('r') as f:
             contracts = json.load(f)
+            print( "2" )
     except Exception as e:
         print("Failed to read contract info")
         print("Please contact your instructor")
