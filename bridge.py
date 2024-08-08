@@ -57,10 +57,10 @@ def scanBlocks(chain):
     w3_src = connectTo(source_chain)
     w3_dest = connectTo(destination_chain)
 
-    src_contract_info = getContractInfo('source')
+    src_contract_info = getContractInfo('avax')
     src_contract = w3_src.eth.contract(address=src_contract_info['address'], abi=src_contract_info['abi'])
 
-    dest_contract_info = getContractInfo('destination')
+    dest_contract_info = getContractInfo('bsc')
     dest_contract = w3_dest.eth.contract(address=dest_contract_info['address'], abi=dest_contract_info['abi'])
 
     w3 = w3_src if chain == 'source' else w3_dest
