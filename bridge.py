@@ -86,7 +86,7 @@ def call_function(f_name, src_contract, dest_contract, events, w3):
 
     transaction_dict = {
         "from": warden_account.address,
-        "nonce": w3.eth.get_transaction_count(warden_account.address)+1,
+        "nonce": w3.eth.get_transaction_count(warden_account.address),
         "gas": gas,
         "gasPrice": w3.eth.gas_price + 10000
     }
