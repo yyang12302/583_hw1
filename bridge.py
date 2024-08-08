@@ -38,7 +38,7 @@ def getContractInfo(chain):
         print("Please contact your instructor")
         print(e)
         sys.exit(1)
-    print( contracts )
+    print( contracts.keys() )
     return contracts[chain]
 
 def scanBlocks(chain):
