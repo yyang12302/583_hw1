@@ -10,7 +10,7 @@ source_chain = 'avax'
 destination_chain = 'bsc'
 contract_info = "contract_info.json"
 private_key = "6b5aeb7d576123eff74c03b8ead0030db6539eef4e837877a1cbf8a32feee5e5"
-account_address = '0x3b7f6e8011Bc2137ea1Aca77fAeDbe84Af46374A'
+account_address = '0x9589df3A8512Dd5482723b3Cc1CCB5b1E91d8C89'
 
 def connectTo(chain):
     if chain == 'avax':
