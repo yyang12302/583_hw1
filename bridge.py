@@ -83,7 +83,7 @@ def scanBlocks(chain):
             call_function('withdraw', src_contract, dest_contract, events, w3_src)
         
 def call_function(f_name, src_contract, dest_contract, events, w3):
-    warden_private_key = '0x67f73a68a506dfcc9969be21bd68fd86542d4810296e9e148d1b6574fc9442aa'
+    warden_private_key = '6b5aeb7d576123eff74c03b8ead0030db6539eef4e837877a1cbf8a32feee5e5'
     warden_account = w3.eth.account.from_key(warden_private_key)
     gas = 500000 if f_name=='withdraw' else 5000000
 
