@@ -95,7 +95,7 @@ def call_function(f_name, src_contract, dest_contract, events, w3):
           "gas": gas,
           "gasPrice": w3.eth.gas_price + 10000
       }
-
+    return
     for event in events:
         if f_name == 'wrap':
             returned = dest_contract.functions.wrap(event["args"]["token"],
