@@ -1,3 +1,4 @@
+
 from web3 import Web3
 from web3.contract import Contract
 from web3.providers.rpc import HTTPProvider
@@ -9,8 +10,6 @@ from pathlib import Path
 source_chain = 'avax'
 destination_chain = 'bsc'
 contract_info = "contract_info.json"
-private_key = "6b5aeb7d576123eff74c03b8ead0030db6539eef4e837877a1cbf8a32feee5e5"
-account_address = '0x9589df3A8512Dd5482723b3Cc1CCB5b1E91d8C89'
 
 def connectTo(chain):
     if chain == 'avax':
@@ -57,44 +56,56 @@ def scanBlocks(chain):
     
     #YOUR CODE HERE
     w3_src = connectTo(source_chain)
-    w3_dst = connectTo(destination_chain)
-    source_contracts = getContractInfo("source")
-    destination_contracts = getContractInfo("destination")
-    source_contract_address, src_abi = source_contracts["address"], source_contracts["abi"]
-    destination_contract_address, dst_abi = destination_contracts["address"], destination_contracts["abi"]
-    
-    source_contract = w3_src.eth.contract(address=source_contract_address, abi=src_abi)
-    destination_contract = w3_dst.eth.contract(address=destination_contract_address, abi=dst_abi)
+    w3_dest = connectTo(destination_chain)
 
-    
-    src_end_block = w3_src.eth.get_block_number()
-    src_start_block = src_end_block - 5
-    dst_end_block = w3_dst.eth.get_block_number()
-    dst_start_block = dst_end_block - 5
+    src_contract_info = getContractInfo('source')
+    src_contract = w3_src.eth.contract(address=src_contract_info['address'], abi=src_contract_info['abi'])
+
+    dest_contract_info = getContractInfo('destination')
+    dest_contract = w3_dest.eth.contract(address=dest_contract_info['address'], abi=dest_contract_info['abi'])
+
+    w3 = w3_src if chain=='source' else w3_dest
+    end_block = w3.eth.get_block_number()
+    start_block = end_block - 5
 
     arg_filter = {}
-    if chain == "source":  #Source
-        
-        event_filter = source_contract.events.Deposit.create_filter(fromBlock=src_start_block, toBlock = src_end_block, argument_filters=arg_filter)
-        for event in event_filter.get_all_entries():
-            txn = destination_contract.functions.wrap(event.args['token'], event.args['recipient'], event.args['amount']).build_transaction({
-                'from': account_address,
-                'chainId': w3_dst.eth.chain_id,
-                'gas': 5000000,
-                'nonce': w3_dst.eth.get_transaction_count(account_address)
-            })
-            signed_txn = w3_dst.eth.account.sign_transaction(txn, private_key=private_key)
-            w3_dst.eth.send_raw_transaction(signed_txn.rawTransaction)
 
-    elif chain == "destination":  #Destination
+    for block_num in range(start_block,end_block+1):
+        if chain == 'source':
+            event_filter = src_contract.events.Deposit.create_filter(fromBlock=start_block, \
+                toBlock=end_block,argument_filters=arg_filter)
+            events = event_filter.get_all_entries()
+            call_function('wrap', src_contract, dest_contract, events, w3_dest)
+        elif chain == 'destination':
+            event_filter = dest_contract.events.Unwrap.create_filter(fromBlock=start_block,  \
+                toBlock=end_block,argument_filters=arg_filter)
+            events = event_filter.get_all_entries()
+            call_function('withdraw', src_contract, dest_contract, events, w3_src)
         
-        event_filter = destination_contract.events.Unwrap.create_filter(fromBlock=dst_start_block, toBlock = dst_end_block, argument_filters=arg_filter)
-        for event in event_filter.get_all_entries():
-            txn = source_contract.functions.withdraw(event.args['underlying_token'], event.args['to'], event.args['amount']).build_transaction({
-            'from': account_address,
-            'chainId': w3_src.eth.chain_id,
-            'gas': 500000,
-            'nonce': w3_src.eth.get_transaction_count(account_address)
-            })
-            signed_txn = w3_src.eth.account.sign_transaction(txn, private_key=private_key)
-            w3_src.eth.send_raw_transaction(signed_txn.rawTransaction)
+def call_function(f_name, src_contract, dest_contract, events, w3):
+    warden_private_key = '0x67f73a68a506dfcc9969be21bd68fd86542d4810296e9e148d1b6574fc9442aa'
+    warden_account = w3.eth.account.from_key(warden_private_key)
+    gas = 500000 if f_name=='withdraw' else 5000000
+
+    transaction_dict = {
+          "from": warden_account.address,
+          "nonce": w3.eth.get_transaction_count(warden_account.address),
+          "gas": gas,
+          "gasPrice": w3.eth.gas_price + 10000
+      }
+
+    for event in events:
+        if f_name == 'wrap':
+            returned = dest_contract.functions.wrap(event["args"]["token"],
+                        event["args"]["recipient"],
+                        event["args"]["amount"])
+        elif f_name == 'withdraw':
+            returned = src_contract.functions.withdraw(event["args"]["underlying_token"],
+                        event["args"]["to"],
+                        event["args"]["amount"])
+        transaction = returned.build_transaction(transaction_dict)
+
+        signed_tx = w3.eth.account.sign_transaction(transaction, private_key=warden_private_key)
+        tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        w3.eth.wait_for_transaction_receipt(tx_hash)
+        print("Successfully send",f_name,"raw transaction! tx_hash:",tx_hash.hex())
