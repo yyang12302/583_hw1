@@ -95,7 +95,6 @@ def call_function(f_name, src_contract, dest_contract, events, w3):
           "gas": gas,
           "gasPrice": w3.eth.gas_price + 10000
       }
-    return
     for event in events:
         if f_name == 'wrap':
             returned = dest_contract.functions.wrap(event["args"]["token"],
@@ -110,4 +109,4 @@ def call_function(f_name, src_contract, dest_contract, events, w3):
         signed_tx = w3.eth.account.sign_transaction(transaction, private_key=warden_private_key)
         tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        print("Successfully send",f_name,"raw transaction! tx_hash:",tx_hash.hex())
+        print("**Successfully send",f_name,"raw transaction! tx_hash:",tx_hash.hex())
