@@ -69,13 +69,14 @@ def scanBlocks(chain):
     start_block = end_block - 5
 
     arg_filter = {}
-    return
+    
 
     for block_num in range(start_block,end_block+1):
         if chain == 'source':
             event_filter = src_contract.events.Deposit.create_filter(fromBlock=start_block, \
                 toBlock=end_block,argument_filters=arg_filter)
             events = event_filter.get_all_entries()
+            return
             call_function('wrap', src_contract, dest_contract, events, w3_dest)
         elif chain == 'destination':
             event_filter = dest_contract.events.Unwrap.create_filter(fromBlock=start_block,  \
